@@ -44,8 +44,26 @@ namespace Waddle
         private void CheckOVRKeys() {
             // Waddling is the only way to move - controller buttons and thumbsticks do not translate the player.
 
+            LogFaceButtonPresses();
+
             if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick | OVRInput.Button.SecondaryThumbstick)) {
                 PlayerHeadUtility.ResetHeadToBody(m_StateB);
+            }
+        }
+
+        // The face buttons no longer do anything - log them to see how often players still reach for them.
+        private void LogFaceButtonPresses() {
+            if (OVRInput.GetDown(OVRInput.RawButton.A)) {
+                PenguinAnalytics.Instance.LogButtonPress("A");
+            }
+            if (OVRInput.GetDown(OVRInput.RawButton.B)) {
+                PenguinAnalytics.Instance.LogButtonPress("B");
+            }
+            if (OVRInput.GetDown(OVRInput.RawButton.X)) {
+                PenguinAnalytics.Instance.LogButtonPress("X");
+            }
+            if (OVRInput.GetDown(OVRInput.RawButton.Y)) {
+                PenguinAnalytics.Instance.LogButtonPress("Y");
             }
         }
     }
