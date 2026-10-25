@@ -42,11 +42,7 @@ namespace Waddle
         }
 
         private void CheckOVRKeys() {
-            if (m_StateA.WalkCooldown <= 0) {
-                if (OVRInput.GetDown(OVRInput.Button.One | OVRInput.Button.Two | OVRInput.Button.Three | OVRInput.Button.Four | OVRInput.Button.SecondaryThumbstickUp | OVRInput.Button.PrimaryThumbstickUp)) {
-                    PlayerMovementUtility.QueueMovement(m_StateA, m_StateB.BodyRoot.forward, PlayerFoot.Invalid, 0.5f, PlayerMovementSource.Button);
-                }
-            }
+            // Waddling is the only way to move - controller buttons and thumbsticks do not translate the player.
 
             if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick | OVRInput.Button.SecondaryThumbstick)) {
                 PlayerHeadUtility.ResetHeadToBody(m_StateB);
