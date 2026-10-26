@@ -11,7 +11,60 @@ namespace Waddle
     {
         #region Inspector
 
+        [Header("Study Build")]
+        [SerializeField]
+        [Tooltip("When off, controller buttons and thumbsticks are logged but do nothing in game. " +
+            "Leave off for study builds - swaying is then the only input that has any effect.")]
+        private bool m_AllowButtonMovement = false;
+
         #endregion // Inspector
+
+        // Every input worth logging on Touch controllers, so we can see when players reach for one.
+        // Gamepad-only and Touchpad entries are left out because they never fire on Quest.
+        static private readonly OVRInput.RawButton[] s_LoggedButtons = new OVRInput.RawButton[] {
+            OVRInput.RawButton.A,
+            OVRInput.RawButton.B,
+            OVRInput.RawButton.X,
+            OVRInput.RawButton.Y,
+            OVRInput.RawButton.Start,
+            OVRInput.RawButton.LIndexTrigger,
+            OVRInput.RawButton.LHandTrigger,
+            OVRInput.RawButton.LThumbstick,
+            OVRInput.RawButton.LThumbstickUp,
+            OVRInput.RawButton.LThumbstickDown,
+            OVRInput.RawButton.LThumbstickLeft,
+            OVRInput.RawButton.LThumbstickRight,
+            OVRInput.RawButton.RIndexTrigger,
+            OVRInput.RawButton.RHandTrigger,
+            OVRInput.RawButton.RThumbstick,
+            OVRInput.RawButton.RThumbstickUp,
+            OVRInput.RawButton.RThumbstickDown,
+            OVRInput.RawButton.RThumbstickLeft,
+            OVRInput.RawButton.RThumbstickRight
+        };
+
+        // Spelled out rather than taken from ToString, so logged values stay stable for analysis.
+        static private readonly string[] s_LoggedButtonNames = new string[] {
+            "A",
+            "B",
+            "X",
+            "Y",
+            "Start",
+            "LIndexTrigger",
+            "LHandTrigger",
+            "LThumbstickClick",
+            "LThumbstickUp",
+            "LThumbstickDown",
+            "LThumbstickLeft",
+            "LThumbstickRight",
+            "RIndexTrigger",
+            "RHandTrigger",
+            "RThumbstickClick",
+            "RThumbstickUp",
+            "RThumbstickDown",
+            "RThumbstickLeft",
+            "RThumbstickRight"
+        };
 
         public override void ProcessWork(float deltaTime) {
             CheckDebugKeys(deltaTime);
@@ -42,46 +95,24 @@ namespace Waddle
         }
 
         private void CheckOVRKeys() {
-            // Waddling is the only way to move - controller buttons and thumbsticks do not translate the player.
+            // Presses are always recorded. Whether any of them does something is up to the flag.
+            LogButtonPresses();
 
-            CheckLegacyMovementInputs();
+            if (!m_AllowButtonMovement) {
+                return;
+            }
 
             if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick | OVRInput.Button.SecondaryThumbstick)) {
                 PlayerHeadUtility.ResetHeadToBody(m_StateB);
             }
         }
 
-        // These used to step the player forward. They no longer move anyone, but they still count as a
-        // beat for the mating dance, which listens for the same waddle event.
-        private void CheckLegacyMovementInputs() {
-            if (OVRInput.GetDown(OVRInput.RawButton.A)) {
-                OnLegacyMovementInput("A");
+        private void LogButtonPresses() {
+            for (int i = 0; i < s_LoggedButtons.Length; i++) {
+                if (OVRInput.GetDown(s_LoggedButtons[i])) {
+                    PenguinAnalytics.Instance.LogButtonPress(s_LoggedButtonNames[i]);
+                }
             }
-            if (OVRInput.GetDown(OVRInput.RawButton.B)) {
-                OnLegacyMovementInput("B");
-            }
-            if (OVRInput.GetDown(OVRInput.RawButton.X)) {
-                OnLegacyMovementInput("X");
-            }
-            if (OVRInput.GetDown(OVRInput.RawButton.Y)) {
-                OnLegacyMovementInput("Y");
-            }
-
-            if (OVRInput.GetDown(OVRInput.RawButton.LThumbstickUp)) {
-                OnLegacyMovementInput("LThumbstickUp");
-            }
-            if (OVRInput.GetDown(OVRInput.RawButton.RThumbstickUp)) {
-                OnLegacyMovementInput("RThumbstickUp");
-            }
-        }
-
-        private void OnLegacyMovementInput(string button) {
-            PenguinAnalytics.Instance.LogButtonPress(button);
-            QueueDanceBeat();
-        }
-
-        private void QueueDanceBeat() {
-            FieldDay.Game.Events.Queue(PlayerMovementUtility.Event_WaddleDetected);
         }
     }
 }
