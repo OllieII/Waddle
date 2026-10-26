@@ -84,3 +84,6 @@ Assets/Models/Seagull/Shaders/Standard Two Sided Soft Blend.shader.meta
 /Assets/us.rsp.meta
 /Assets/StreamingAssets/__buildInfo.txt.meta
 /Assets/StreamingAssets/__buildInfo.txt
+
+/Builds/
+CODEX_*.md
