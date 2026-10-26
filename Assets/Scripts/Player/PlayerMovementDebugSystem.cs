@@ -44,27 +44,44 @@ namespace Waddle
         private void CheckOVRKeys() {
             // Waddling is the only way to move - controller buttons and thumbsticks do not translate the player.
 
-            LogFaceButtonPresses();
+            CheckLegacyMovementInputs();
 
             if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick | OVRInput.Button.SecondaryThumbstick)) {
                 PlayerHeadUtility.ResetHeadToBody(m_StateB);
             }
         }
 
-        // The face buttons no longer do anything - log them to see how often players still reach for them.
-        private void LogFaceButtonPresses() {
+        // These used to step the player forward. They no longer move anyone, but they still count as a
+        // beat for the mating dance, which listens for the same waddle event.
+        private void CheckLegacyMovementInputs() {
             if (OVRInput.GetDown(OVRInput.RawButton.A)) {
-                PenguinAnalytics.Instance.LogButtonPress("A");
+                OnLegacyMovementInput("A");
             }
             if (OVRInput.GetDown(OVRInput.RawButton.B)) {
-                PenguinAnalytics.Instance.LogButtonPress("B");
+                OnLegacyMovementInput("B");
             }
             if (OVRInput.GetDown(OVRInput.RawButton.X)) {
-                PenguinAnalytics.Instance.LogButtonPress("X");
+                OnLegacyMovementInput("X");
             }
             if (OVRInput.GetDown(OVRInput.RawButton.Y)) {
-                PenguinAnalytics.Instance.LogButtonPress("Y");
+                OnLegacyMovementInput("Y");
             }
+
+            if (OVRInput.GetDown(OVRInput.RawButton.LThumbstickUp)) {
+                OnLegacyMovementInput("LThumbstickUp");
+            }
+            if (OVRInput.GetDown(OVRInput.RawButton.RThumbstickUp)) {
+                OnLegacyMovementInput("RThumbstickUp");
+            }
+        }
+
+        private void OnLegacyMovementInput(string button) {
+            PenguinAnalytics.Instance.LogButtonPress(button);
+            QueueDanceBeat();
+        }
+
+        private void QueueDanceBeat() {
+            FieldDay.Game.Events.Queue(PlayerMovementUtility.Event_WaddleDetected);
         }
     }
 }
