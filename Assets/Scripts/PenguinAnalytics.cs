@@ -65,7 +65,7 @@ public class PenguinAnalytics : Singleton<PenguinAnalytics>
 
     [NonSerialized] float seconds_at_start = 0f;
 	
-	FieldDay.OGDLog _ogdLog;
+	OGDLogForwarder _ogdLog;
 	
 	[SerializeField]
 	FieldDay.FirebaseConsts _firebase;
@@ -98,7 +98,7 @@ public class PenguinAnalytics : Singleton<PenguinAnalytics>
 		c.AppId = _DB_NAME;
 		c.AppVersion = UnityEngine.Application.version;
 		c.ClientLogVersion = logVersion;
-		_ogdLog = new FieldDay.OGDLog(c);
+		_ogdLog = new OGDLogForwarder(c);
 
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
         CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -108,7 +108,7 @@ public class PenguinAnalytics : Singleton<PenguinAnalytics>
 		}
 		
 		_ogdLog.UseFirebase(_firebase);
-        //_ogdLog.SetDebug(true);
+        //_ogdLog.Inner.SetDebug(true);
     }
 	
 	void OnDestroy()
