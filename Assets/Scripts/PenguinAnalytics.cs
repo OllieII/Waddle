@@ -59,7 +59,7 @@ public static class RunMode {
 public class PenguinAnalytics : Singleton<PenguinAnalytics>
 {
 	public static bool FirebaseEnabled { get; set; }
-    public static int logVersion = 11;
+    public static int logVersion = 12;
     
 	static string _DB_NAME = "PENGUINS";
 
@@ -999,6 +999,18 @@ public class PenguinAnalytics : Singleton<PenguinAnalytics>
 			SetGameState();
 			
             _ogdLog.BeginEvent("global_timer_expired");
+            _ogdLog.SubmitEvent();
+        }
+    }
+
+    public void LogButtonPress(string button)
+    {
+        if(_loggingEnabled)
+		{
+			SetGameState();
+			
+            _ogdLog.BeginEvent("BUTTON_PRESS");
+            _ogdLog.EventParam("button", button);
             _ogdLog.SubmitEvent();
         }
     }
