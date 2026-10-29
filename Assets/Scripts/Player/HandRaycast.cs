@@ -100,9 +100,11 @@ public class HandRaycast : MonoBehaviour
     void Update()
     {
 		//add check for hand tracking being active...
-		if(PenguinPlayer.Instance.ShowingUI && _rightHand != null && _handTracker != null)
+		if(PenguinPlayer.Instance.ShowingUI && _rightHand != null)
 		{
-			if((_handTracker.IsTracked && _handTracker.IsDataHighConfidence) || _isRightUsingController)
+			bool handIsTracked = _handTracker != null && _handTracker.IsTracked && _handTracker.IsDataHighConfidence;
+			
+			if(handIsTracked || _isRightUsingController)
 			{
 				RaycastHit hitInfo;
 				
@@ -142,8 +144,10 @@ public class HandRaycast : MonoBehaviour
 				
 				//Debug.Log(_avgPosition.ToString("F3") + " " + _avgDirection.ToString("F3"));
 				
-				//if(OVRInput.Get(OVRInput.Button.One))
-				if(_handTracker.GetFingerIsPinching(OVRHand.HandFinger.Index))
+				bool menuButtonDown = (_handTracker != null && _handTracker.GetFingerIsPinching(OVRHand.HandFinger.Index))
+									|| OVRInput.GetDown(OVRInput.Button.One);
+				
+				if(menuButtonDown)
 				{
 					if(Physics.Raycast(_avgPosition, _avgDirection, out hitInfo, Mathf.Infinity, _mask, QueryTriggerInteraction.Ignore))
 					{
