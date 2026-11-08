@@ -103,10 +103,10 @@ public class PenguinAnalytics : Singleton<PenguinAnalytics>
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
         CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 		
-		if(RunMode.Current != RunMode.ApplicationRunMode.Device) {
-			_loggingEnabled = false;
-		}
-		
+		//Logging stays on everywhere so the Editor writes the same local session files a headset does.
+		//Whether anything reaches OGD is decided inside OGDLogForwarder, which only builds its inner
+		//OGDLog on Device - so an Editor or Simulator run logs locally and contacts nothing.
+
 		_ogdLog.UseFirebase(_firebase);
         //_ogdLog.Inner.SetDebug(true);
     }
