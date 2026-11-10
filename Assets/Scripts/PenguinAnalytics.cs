@@ -65,7 +65,7 @@ public class PenguinAnalytics : Singleton<PenguinAnalytics>
 
     [NonSerialized] float seconds_at_start = 0f;
 	
-	FieldDay.OGDLog _ogdLog;
+	OGDLogForwarder _ogdLog;
 	
 	[SerializeField]
 	FieldDay.FirebaseConsts _firebase;
@@ -98,17 +98,17 @@ public class PenguinAnalytics : Singleton<PenguinAnalytics>
 		c.AppId = _DB_NAME;
 		c.AppVersion = UnityEngine.Application.version;
 		c.ClientLogVersion = logVersion;
-		_ogdLog = new FieldDay.OGDLog(c);
+		_ogdLog = new OGDLogForwarder(c);
 
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
         CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 		
-		if(RunMode.Current != RunMode.ApplicationRunMode.Device) {
-			_loggingEnabled = false;
-		}
-		
+		//Logging stays on everywhere so the Editor writes the same local session files a headset does.
+		//Whether anything reaches OGD is decided inside OGDLogForwarder, which only builds its inner
+		//OGDLog on Device - so an Editor or Simulator run logs locally and contacts nothing.
+
 		_ogdLog.UseFirebase(_firebase);
-        //_ogdLog.SetDebug(true);
+        //_ogdLog.Inner.SetDebug(true);
     }
 	
 	void OnDestroy()
